@@ -19,7 +19,7 @@ function updateDns(serial, servers) {
     var apiServers = [];
     var europeServers = [];
     var usServers = [];
-    for (i in servers) {
+    for (var i in servers) {
         var item = servers[i];
         nsServers.push(item['ns']);
         if (item['region'] == 'us') {
@@ -42,7 +42,7 @@ function updateDns(serial, servers) {
             }
         }
     };
-    for (i in servers) {
+    for (var i in servers) {
         var item = servers[i];
         dnsFile['data'][item['name']] = { 'a': [ [item['ip'], 0] ] }
     }
