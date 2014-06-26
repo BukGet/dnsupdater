@@ -1,0 +1,19 @@
+{
+  "name": "bukget-dnsupdater",
+  "version": "0.0.1",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo 'No tests defined' && exit 0",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BukGet/dnsupdater.git"
+  },
+  "homepage": "http://bukget.org",
+  "author": "David Marby <david@dmarby.se> http://dmarby.se",
+  "dependencies": {
+    "restify": "~2.6.1"
+  }
+}
