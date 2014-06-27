@@ -2,6 +2,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 var config = require('./config');
 var restify = require('restify');
+var unirest = require('unirest');
 
 var app = restify.createServer();
 
@@ -58,6 +59,16 @@ app.post('/dnsupdate', function (req, res, next) {
     }
     res.send(200);
     updateDns(req.params.serial, JSON.parse(req.params.servers));
+});
+
+unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) {
+    try {
+      response.body = JSON.parse(response.body)
+    } catch (e) {
+      log('Couldn\'t get current dns config');
+      return;
+    }
+    updateDns(response.body['serial'], response.body['servers']);
 });
 
 var port = process.env.PORT || 5555

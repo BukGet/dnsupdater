@@ -14,6 +14,7 @@
   "homepage": "http://bukget.org",
   "author": "David Marby <david@dmarby.se> http://dmarby.se",
   "dependencies": {
-    "restify": "~2.6.1"
+    "restify": "~2.6.1",
+    "unirest": "^0.2.7"
   }
 }
