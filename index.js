@@ -5,6 +5,7 @@ var restify = require('restify');
 var unirest = require('unirest');
 
 var app = restify.createServer();
+var lastSerial = 0;
 
 app.use(restify.jsonp());
 app.use(restify.queryParser());
@@ -16,6 +17,7 @@ app.use(function (req, res, next) {
 });
 
 function updateDns(serial, servers) {
+    lastSerial = serial;
     var nsServers = [];
     var apiServers = [];
     var europeServers = [];
@@ -52,6 +54,10 @@ function updateDns(serial, servers) {
     console.log("Updated dns!");
 }
 
+app.get('/serial', function (req, res, next) {
+    res.send({ 'serial': lastSerial });
+});
+
 app.post('/dnsupdate', function (req, res, next) {
     if (req.params.key != config.key) {
         res.send(403);
@@ -65,7 +71,7 @@ unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) 
     try {
       response.body = JSON.parse(response.body)
     } catch (e) {
-      log('Couldn\'t get current dns config');
+      console.log('Couldn\'t get current dns config');
       return;
     }
     updateDns(response.body['serial'], response.body['servers']);
