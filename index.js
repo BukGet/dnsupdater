@@ -59,6 +59,8 @@ app.get('/serial', function (req, res, next) {
 });
 
 app.post('/dnsupdate', function (req, res, next) {
+    console.log(req.params);
+    console.log(config.key);
     if (req.params.key != config.key) {
         res.send(403);
         return;
@@ -68,9 +70,7 @@ app.post('/dnsupdate', function (req, res, next) {
 });
 
 unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) {
-    try {
-      response.body = JSON.parse(response.body)
-    } catch (e) {
+    if (response.error) {
       console.log('Couldn\'t get current dns config');
       return;
     }
