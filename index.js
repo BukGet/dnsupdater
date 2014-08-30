@@ -37,21 +37,27 @@ function updateDns(serial, servers) {
         'contact': 'staff.bukget.org',
         'data': {
             '': {
-                "ns": nsServers,
-                "a": usServers
-            },
-            'europe': {
-                'a': europeServers
+                'ns': nsServers
             }
         }
     };
+    if (usServers.length > 0) {
+        dnsFile.data[''].a = usServers;
+    } else {
+        dnsFile.data[''].a = europeServers;
+    }
+    if (europeServers.length > 0) {
+        dnsFile.data.europe = {
+            'a': europeServers
+        }
+    }
     for (var i in servers) {
         var item = servers[i];
         dnsFile['data'][item['name']] = { 'a': [ [item['ip'], 0] ] }
     }
     fs.writeFile('/opt/geodns/dns/api.bukget.org.json', JSON.stringify(dnsFile), 'utf8', function (err) {});
-    exec("initctl restart geodns", function(error, stdout, stderr) {}); 
-    console.log("Updated dns!");
+    exec('initctl restart geodns', function(error, stdout, stderr) {}); 
+    console.log('Updated dns!');
 }
 
 app.get('/serial', function (req, res, next) {
@@ -79,4 +85,4 @@ unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) 
 
 var port = process.env.PORT || 5555
 app.listen(port);
-console.log("Listening on: " + port);
+console.log('Listening on: ' + port);
