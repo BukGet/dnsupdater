@@ -91,7 +91,12 @@ unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) 
       console.log('Couldn\'t get current dns config');
       return;
     }
-    updateDns(response.body['serial'], response.body['servers']);
+    updateDns(response.body['serial'], response.body['servers'], function (err) {
+        if (err) {
+            return console.log('Initial DNS sync failed');
+        }
+        console.log('Initial DNS sync successfull');
+    });
 });
 
 app.listen(process.env.PORT || 5555, function () {
