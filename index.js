@@ -16,7 +16,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-function updateDns(serial, servers) {
+function updateDns(serial, servers, callback) {
     lastSerial = serial;
     var nsServers = [];
     var apiServers = [];
@@ -55,9 +55,17 @@ function updateDns(serial, servers) {
         var item = servers[i];
         dnsFile['data'][item['name']] = { 'a': [ [item['ip'], 0] ] }
     }
-    fs.writeFile('/opt/geodns/dns/api.bukget.org.json', JSON.stringify(dnsFile), 'utf8', function (err) {});
-    exec('initctl restart geodns', function(error, stdout, stderr) {}); 
-    console.log('Updated dns!');
+    fs.writeFile(config.dnsFile, JSON.stringify(dnsFile), 'utf8', function (err) {
+        if (err) {
+            console.log('Error writing DNS config file');
+            console.trace(err);
+            callback(true);
+        }
+        exec('initctl restart geodns', function(error, stdout, stderr) {
+            console.log('Updated dns!');
+            callback(false);
+        }); 
+    });
 }
 
 app.get('/serial', function (req, res, next) {
@@ -65,14 +73,17 @@ app.get('/serial', function (req, res, next) {
 });
 
 app.post('/dnsupdate', function (req, res, next) {
+    console.log('Incoming DNS update request');
     console.log(req.params);
-    console.log(config.key);
     if (req.params.key != config.key) {
-        res.send(403);
-        return;
+        return res.send(403);
     }
-    res.send(200);
-    updateDns(req.params.serial, JSON.parse(req.params.servers));
+    updateDns(req.params.serial, JSON.parse(req.params.servers), function (err) {
+        if (err) {
+            return res.send(500);
+        }
+        return res.send(200);
+    });
 });
 
 unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) {
@@ -83,6 +94,6 @@ unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) 
     updateDns(response.body['serial'], response.body['servers']);
 });
 
-var port = process.env.PORT || 5555
-app.listen(port);
-console.log('Listening on: ' + port);
+app.listen(process.env.PORT || 5555, function () {
+  console.log('Listening on: %s', app.url);
+});
