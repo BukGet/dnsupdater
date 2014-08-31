@@ -95,7 +95,7 @@ unirest.get('http://monitor.bukget.org/currentDNS').as.json(function (response) 
         if (err) {
             return console.log('Initial DNS sync failed');
         }
-        console.log('Initial DNS sync successfull');
+        console.log('Initial DNS sync successful');
     });
 });
 
